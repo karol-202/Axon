@@ -5,8 +5,8 @@ import pl.karol202.axon.FloatRange
 import pl.karol202.axon.randomNonZero
 
 abstract class AbstractNeuron(
-		val inputs: Int,
-		val activation: Activation
+		protected val inputs: Int,
+		protected val activation: Activation
 ) : Neuron {
 	protected val weights = FloatArray(inputs + 1)
 
