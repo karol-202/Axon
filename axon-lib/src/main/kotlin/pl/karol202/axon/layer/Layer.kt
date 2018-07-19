@@ -4,6 +4,8 @@ import pl.karol202.axon.FloatRange
 
 interface Layer
 {
+	val size: Int
+
 	fun randomizeWeights(range: FloatRange)
 
 	fun calculate(input: FloatArray): FloatArray
