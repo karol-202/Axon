@@ -9,7 +9,8 @@ import pl.karol202.axon.neuron.Neuron
 abstract class AbstractNetwork<L : Layer<N>, N : Neuron, O>(
 		protected val layers: List<L>,
 		protected val outputType: Output<O>
-) : Network<L, N, O> {
+) : Network<L, N, O>
+{
 	override fun randomize(range: FloatRange)
 	{
 		layers.forEach { it.randomizeWeights(range) }

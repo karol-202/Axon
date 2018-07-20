@@ -5,7 +5,7 @@ import pl.karol202.axon.Vector
 import pl.karol202.axon.layer.Layer
 import pl.karol202.axon.neuron.Neuron
 
-interface Network<L : Layer<N>  , N : Neuron, O>
+interface Network<L : Layer<N>, N : Neuron, O>
 {
 	fun randomize(range: FloatRange)
 

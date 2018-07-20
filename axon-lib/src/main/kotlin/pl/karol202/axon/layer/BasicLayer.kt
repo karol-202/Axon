@@ -11,7 +11,8 @@ fun BasicNetwork.Specification<*>.basicLayer(init: BasicLayer.Specification.() -
 class BasicLayer(
 		neurons: List<BasicNeuron>
 ) : AbstractLayer<BasicNeuron>(neurons),
-    BackpropagationLayer<BasicNeuron> {
+    BackpropagationLayer<BasicNeuron>
+{
 	class Specification : LayerSpecification<BasicLayer, BasicNeuron>()
 	{
 		override fun createLayer(neurons: List<BasicNeuron>) = BasicLayer(neurons)

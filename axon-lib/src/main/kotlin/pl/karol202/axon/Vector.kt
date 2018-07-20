@@ -4,7 +4,8 @@ import java.util.*
 
 open class Vector(
 		val inputs: FloatArray
-) {
+)
+{
 	override fun equals(other: Any?) = when
 	{
 		this === other -> true

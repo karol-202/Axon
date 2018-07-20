@@ -7,7 +7,8 @@ import pl.karol202.axon.neuron.Neuron
 abstract class NeuronSpecification<N : Neuron>(
 		val weights: FloatArray? = null,
 		val activation: Activation
-) : SpecificationElement {
+) : SpecificationElement
+{
 	internal fun create(inputs: Int): N
 	{
 		if(weights == null) return createNeuron(inputs)

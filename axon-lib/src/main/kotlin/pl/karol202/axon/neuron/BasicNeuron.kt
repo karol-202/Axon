@@ -10,12 +10,14 @@ fun BasicLayer.Specification.basicNeuron(weights: FloatArray? = null, activation
 class BasicNeuron(
 		weights: FloatArray,
 		activation: Activation
-) : AbstractNeuron(weights, activation), BackpropagationNeuron
+) : AbstractNeuron(weights, activation),
+    BackpropagationNeuron
 {
 	class Specification(
 			weights: FloatArray? = null,
 			activation: Activation
-	) : NeuronSpecification<BasicNeuron>(weights, activation) {
+	) : NeuronSpecification<BasicNeuron>(weights, activation)
+	{
 		override fun createNeuron(inputs: Int) = BasicNeuron(inputs, activation)
 
 		override fun createNeuron(weights: FloatArray) = BasicNeuron(weights, activation)

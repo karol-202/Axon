@@ -7,7 +7,8 @@ import pl.karol202.axon.randomNonZero
 abstract class AbstractNeuron protected constructor(
 		protected val weights: FloatArray,
 		protected val activation: Activation
-) : Neuron {
+) : Neuron
+{
 	override val inputs = weights.size - 1
 
 	protected var input: FloatArray? = null

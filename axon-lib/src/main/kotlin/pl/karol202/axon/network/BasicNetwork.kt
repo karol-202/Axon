@@ -15,11 +15,14 @@ fun <O> basicNetwork(inputs: Int, outputType: Output<O>, init: BasicNetwork.Spec
 class BasicNetwork<O>(
 		layers: List<BasicLayer>,
 		outputType: Output<O>
-) : AbstractNetwork<BasicLayer, BasicNeuron, O>(layers, outputType), SupervisedNetwork<BasicLayer, BasicNeuron, O> {
+) : AbstractNetwork<BasicLayer, BasicNeuron, O>(layers, outputType),
+    SupervisedNetwork<BasicLayer, BasicNeuron, O>
+{
 	class Specification<O>(
 			inputs: Int,
 			outputType: Output<O>
-	) : NetworkSpecification<BasicNetwork<O>, BasicLayer, BasicNeuron, O>(inputs, outputType) {
+	) : NetworkSpecification<BasicNetwork<O>, BasicLayer, BasicNeuron, O>(inputs, outputType)
+	{
 		override fun createNetwork(layers: List<BasicLayer>) = BasicNetwork(layers, outputType)
 	}
 
