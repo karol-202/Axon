@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.karol-202:Axon:0.1'
+    implementation 'com.github.karol-202:Axon:0.1.1'
 }
 ```
 
