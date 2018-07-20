@@ -4,18 +4,24 @@ import pl.karol202.axon.AxonException
 import pl.karol202.axon.layer.BasicLayer
 import pl.karol202.axon.network.specification.NeuronSpecification
 
-fun BasicLayer.Specification.basicNeuron(activation: Activation) =
-		addNeuron(BasicNeuron.Specification(activation))
+fun BasicLayer.Specification.basicNeuron(weights: FloatArray? = null, activation: Activation) =
+		addNeuron(BasicNeuron.Specification(weights, activation))
 
 class BasicNeuron(
-		inputs: Int,
+		weights: FloatArray,
 		activation: Activation
-) : AbstractNeuron(inputs, activation), BackpropagationNeuron
+) : AbstractNeuron(weights, activation), BackpropagationNeuron
 {
-	class Specification(activation: Activation) : NeuronSpecification<BasicNeuron>(activation)
-	{
+	class Specification(
+			weights: FloatArray? = null,
+			activation: Activation
+	) : NeuronSpecification<BasicNeuron>(weights, activation) {
 		override fun createNeuron(inputs: Int) = BasicNeuron(inputs, activation)
+
+		override fun createNeuron(weights: FloatArray) = BasicNeuron(weights, activation)
 	}
+
+	constructor(inputs: Int, activation: Activation) : this(FloatArray(inputs + 1), activation)
 
 	override fun learn(error: Float, learnRate: Float)
 	{

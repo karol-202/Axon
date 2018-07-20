@@ -16,5 +16,5 @@ abstract class LayerSpecification<L : Layer<N>, N : Neuron> : SpecificationEleme
 
 	abstract fun createLayer(neurons: List<N>): L
 
-	private fun createNeurons(inputs: Int) = neurons.map { it.createNeuron(inputs) }
+	private fun createNeurons(inputs: Int) = neurons.map { it.create(inputs) }
 }

@@ -4,13 +4,15 @@ import pl.karol202.axon.AxonException
 import pl.karol202.axon.FloatRange
 import pl.karol202.axon.randomNonZero
 
-abstract class AbstractNeuron(
-		protected val inputs: Int,
+abstract class AbstractNeuron protected constructor(
+		protected val weights: FloatArray,
 		protected val activation: Activation
 ) : Neuron {
-	protected val weights = FloatArray(inputs + 1)
+	override val inputs = weights.size - 1
 
 	protected var input: FloatArray? = null
+
+	override fun getCurrentWeights() = weights.clone()
 
 	override fun randomizeWeights(range: FloatRange)
 	{
