@@ -6,7 +6,7 @@ import pl.karol202.axon.neuron.Neuron
 
 abstract class AbstractLayer<N : Neuron> protected constructor(
 		protected val neurons: List<N>
-) : Layer {
+) : Layer<N> {
 	override val size: Int
 		get() = neurons.size
 

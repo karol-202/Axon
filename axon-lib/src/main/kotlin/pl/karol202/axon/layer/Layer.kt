@@ -1,8 +1,9 @@
 package pl.karol202.axon.layer
 
 import pl.karol202.axon.FloatRange
+import pl.karol202.axon.neuron.Neuron
 
-interface Layer
+interface Layer<N : Neuron>
 {
 	val size: Int
 

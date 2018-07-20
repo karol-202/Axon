@@ -1,0 +1,4 @@
+package pl.karol202.axon.network.specification
+
+@SpecificationMarker
+interface SpecificationElement
