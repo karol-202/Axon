@@ -1,4 +1,4 @@
-package pl.karol202.axon.network.specification
+package pl.karol202.axon.specification
 
 @DslMarker
 annotation class SpecificationMarker

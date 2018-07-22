@@ -1,6 +1,6 @@
-package pl.karol202.axon.network.specification
+package pl.karol202.axon.specification
 
-import pl.karol202.axon.Output
+import pl.karol202.axon.network.Output
 import pl.karol202.axon.layer.Layer
 import pl.karol202.axon.network.Network
 import pl.karol202.axon.neuron.Neuron

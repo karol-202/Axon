@@ -1,4 +1,4 @@
-package pl.karol202.axon
+package pl.karol202.axon.network
 
 import java.util.*
 
@@ -19,7 +19,8 @@ open class Vector(
 class VectorWithResponse(
 		inputs: FloatArray,
 		val outputs: FloatArray
-) : Vector(inputs) {
+) : Vector(inputs)
+{
 	override fun equals(other: Any?) = when
 	{
 		this === other -> true

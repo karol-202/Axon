@@ -1,12 +1,10 @@
 package pl.karol202.axon.network
 
 import pl.karol202.axon.AxonException
-import pl.karol202.axon.Output
-import pl.karol202.axon.VectorWithResponse
 import pl.karol202.axon.layer.BasicLayer
 import pl.karol202.axon.minus
-import pl.karol202.axon.network.specification.NetworkSpecification
-import pl.karol202.axon.network.specification.createNetwork
+import pl.karol202.axon.specification.NetworkSpecification
+import pl.karol202.axon.specification.createNetwork
 import pl.karol202.axon.neuron.BasicNeuron
 
 fun <O> basicNetwork(inputs: Int, outputType: Output<O>, init: BasicNetwork.Specification<O>.() -> Unit) =
@@ -26,18 +24,19 @@ class BasicNetwork<O>(
 		override fun createNetwork(layers: List<BasicLayer>) = BasicNetwork(layers, outputType)
 	}
 
-	override fun learn(vector: VectorWithResponse, learnRatio: Float): FloatArray
+	override fun learn(vector: VectorWithResponse, learnRate: Float): SupervisedNetwork.LearnOutput<O>
 	{
 		if(vector.outputs.size != layers.last().size) throw AxonException("Invalid vector size")
-		val output = calculateRaw(vector)
-		var error = vector.outputs - output
+		val outputRaw = calculateRaw(vector)
+		var error = vector.outputs - outputRaw
 		((layers.size - 1) downTo 0).forEach { i ->
 			val layer = layers[i]
 			val previousLayerSize = if(i != 0) layers[i].size else 0
 			val currentError = error
 			error = layer.backpropagateError(currentError, previousLayerSize)
-			layer.learn(currentError, learnRatio)
+			layer.learn(currentError, learnRate)
 		}
-		return error
+		val output = outputType.transform(outputRaw)
+		return SupervisedNetwork.LearnOutput(output, error)
 	}
 }

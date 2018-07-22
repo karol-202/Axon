@@ -1,4 +1,4 @@
-package pl.karol202.axon.network.specification
+package pl.karol202.axon.specification
 
 import pl.karol202.axon.AxonException
 import pl.karol202.axon.neuron.Activation

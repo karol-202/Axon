@@ -2,7 +2,7 @@ package pl.karol202.axon.layer
 
 import pl.karol202.axon.AxonException
 import pl.karol202.axon.network.BasicNetwork
-import pl.karol202.axon.network.specification.LayerSpecification
+import pl.karol202.axon.specification.LayerSpecification
 import pl.karol202.axon.neuron.BasicNeuron
 
 fun BasicNetwork.Specification<*>.basicLayer(init: BasicLayer.Specification.() -> Unit) =
