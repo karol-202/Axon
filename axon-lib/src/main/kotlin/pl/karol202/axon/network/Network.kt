@@ -6,6 +6,8 @@ import pl.karol202.axon.neuron.Neuron
 
 interface Network<L : Layer<N>, N : Neuron, O>
 {
+	fun getAllWeights(): List<List<FloatArray>>
+
 	fun randomize(range: FloatRange)
 
 	fun calculate(vector: Vector): O

@@ -46,7 +46,7 @@ class Trainer<O>(
 			errors
 		}
 		val highestError = errors.flatMap { it.asIterable() }.maxBy { abs(it) } ?: 0f
-		val sumSquaredError = errors.sumByDouble { it.sumByDouble { it.pow(2).toDouble() } }.toFloat()
+		val sumSquaredError = errors.sumByDouble { it.sumByDouble { it.pow(2).toDouble() } }.toFloat() //TODO Fix
 		epochListener?.invoke(LearningState(learnRate, highestError, sumSquaredError))
 	}
 }

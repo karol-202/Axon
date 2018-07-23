@@ -11,6 +11,8 @@ abstract class AbstractLayer<N : Neuron> protected constructor(
 	override val size: Int
 		get() = neurons.size
 
+	override fun getAllWeights() = neurons.map { it.getCurrentWeights() }
+
 	override fun randomizeWeights(range: FloatRange)
 	{
 		neurons.forEach { it.randomizeWeights(range) }
