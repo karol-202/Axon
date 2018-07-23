@@ -13,7 +13,7 @@ abstract class AbstractNeuron protected constructor(
 
 	protected var input: FloatArray? = null
 
-	override fun getCurrentWeights() = weights.clone()
+	override fun getNeuronData() = NeuronData(weights)
 
 	override fun randomizeWeights(range: FloatRange)
 	{

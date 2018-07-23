@@ -3,12 +3,12 @@ package pl.karol202.axon.network
 import pl.karol202.axon.AxonException
 import pl.karol202.axon.layer.BasicLayer
 import pl.karol202.axon.minus
+import pl.karol202.axon.neuron.BasicNeuron
 import pl.karol202.axon.specification.NetworkSpecification
 import pl.karol202.axon.specification.createNetwork
-import pl.karol202.axon.neuron.BasicNeuron
 
-fun <O> basicNetwork(inputs: Int, outputType: Output<O>, init: BasicNetwork.Specification<O>.() -> Unit) =
-		createNetwork(BasicNetwork.Specification(inputs, outputType), init)
+fun <O> basicNetwork(inputs: Int, outputType: Output<O>, networkData: NetworkData?, init: BasicNetwork.Specification<O>.() -> Unit) =
+		createNetwork(BasicNetwork.Specification(inputs, outputType, networkData), init)
 
 class BasicNetwork<O>(
 		layers: List<BasicLayer>,
@@ -18,8 +18,9 @@ class BasicNetwork<O>(
 {
 	class Specification<O>(
 			inputs: Int,
-			outputType: Output<O>
-	) : NetworkSpecification<BasicNetwork<O>, BasicLayer, BasicNeuron, O>(inputs, outputType)
+			outputType: Output<O>,
+			networkData: NetworkData?
+	) : NetworkSpecification<BasicNetwork<O>, BasicLayer, BasicNeuron, O>(inputs, outputType, networkData)
 	{
 		override fun createNetwork(layers: List<BasicLayer>) = BasicNetwork(layers, outputType)
 	}

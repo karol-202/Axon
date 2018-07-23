@@ -7,7 +7,7 @@ interface Layer<N : Neuron>
 {
 	val size: Int
 
-	fun getAllWeights(): List<FloatArray>
+	fun getLayerData(): LayerData
 
 	fun randomizeWeights(range: FloatRange)
 

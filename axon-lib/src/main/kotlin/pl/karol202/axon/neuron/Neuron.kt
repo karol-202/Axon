@@ -6,7 +6,7 @@ interface Neuron
 {
 	val inputs: Int
 
-	fun getCurrentWeights(): FloatArray
+	fun getNeuronData(): NeuronData
 
 	fun randomizeWeights(range: FloatRange)
 

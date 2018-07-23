@@ -9,7 +9,7 @@ abstract class AbstractNetwork<L : Layer<N>, N : Neuron, O>(
 		protected val outputType: Output<O>
 ) : Network<L, N, O>
 {
-	override fun getAllWeights() = layers.map { it.getAllWeights() }
+	override fun getNetworkData() = NetworkData.fromLayers(layers)
 
 	override fun randomize(range: FloatRange)
 	{
