@@ -4,7 +4,7 @@ import pl.karol202.axon.neuron.Neuron
 import pl.karol202.axon.neuron.NeuronData
 
 data class LayerData(
-		private val neurons: List<NeuronData>
+		val neurons: List<NeuronData>
 ) : Iterable<NeuronData>
 {
 	companion object

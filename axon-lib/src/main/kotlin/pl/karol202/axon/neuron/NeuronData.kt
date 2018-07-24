@@ -1,7 +1,7 @@
 package pl.karol202.axon.neuron
 
 data class NeuronData(
-		private val weightsList: List<Float>
+		val weightsList: List<Float>
 )
 {
 	val weights: FloatArray

@@ -4,7 +4,7 @@ import pl.karol202.axon.layer.Layer
 import pl.karol202.axon.layer.LayerData
 
 data class NetworkData(
-		private val layers: List<LayerData>
+		val layers: List<LayerData>
 ) : Iterable<LayerData>
 {
 	companion object

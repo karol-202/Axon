@@ -6,6 +6,11 @@ interface TrainingStop
 	fun shouldStop(state: Trainer.LearningState?): Boolean
 }
 
+class TrainingStopNever : TrainingStop
+{
+	override fun shouldStop(state: Trainer.LearningState?) = false
+}
+
 class TrainingStopHighestError(val thresholdError: Float) : TrainingStop
 {
 	override fun shouldStop(state: Trainer.LearningState?): Boolean

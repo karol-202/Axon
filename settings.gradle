@@ -1,2 +1,3 @@
 rootProject.name = 'axon'
 include ':axon-lib'
+if(!System.env.JITPACK) include ':axon-samples'

@@ -1,0 +1,17 @@
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
+}
+
+dependencies {
+    implementation project(':axon-lib')
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.23.4'
+    implementation 'com.squareup.moshi:moshi:1.6.0'
+}
+
+task runNeuronCmd(type: JavaExec, dependsOn: 'classes') {
+    main = 'pl.karol202.axonsamples.neuroncmd.MainKt'
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+}

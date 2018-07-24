@@ -29,15 +29,16 @@ class BasicNetwork<O>(
 	{
 		if(vector.outputs.size != layers.last().size) throw AxonException("Invalid vector size")
 		val outputRaw = calculateRaw(vector)
-		var error = vector.outputs - outputRaw
+		val outputError = vector.outputs - outputRaw
+		var currentError = outputError
 		((layers.size - 1) downTo 0).forEach { i ->
 			val layer = layers[i]
-			val previousLayerSize = if(i != 0) layers[i].size else 0
-			val currentError = error
-			error = layer.backpropagateError(currentError, previousLayerSize)
-			layer.learn(currentError, learnRate)
+			val previousLayerSize = if(i != 0) layers[i - 1].size else 0
+			val error = currentError
+			currentError = layer.backpropagateError(error, previousLayerSize)
+			layer.learn(error, learnRate)
 		}
 		val output = outputType.transform(outputRaw)
-		return SupervisedNetwork.LearnOutput(output, error)
+		return SupervisedNetwork.LearnOutput(output, outputError)
 	}
 }

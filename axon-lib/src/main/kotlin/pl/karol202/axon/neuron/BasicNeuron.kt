@@ -26,9 +26,11 @@ class BasicNeuron(
 	override fun learn(error: Float, learnRate: Float)
 	{
 		val input = input ?: throw AxonException("Cannot learn neuron without calculating.")
+		val output = output ?: throw AxonException("Cannot learn neuron without calculating.")
+		val transformedError = error * activation.calculateDerivative(output)
 		repeat(weights.size) { i ->
 			val inputFactor = if(i < inputs) input[i] else 1f
-			weights[i] += learnRate * error * inputFactor
+			weights[i] += learnRate * transformedError * inputFactor
 		}
 	}
 

@@ -44,13 +44,13 @@ class Trainer<O>(
 	)
 	{
 		val errors = vectors.map { vector ->
-			val (output, errors) = network.learn(vector, learnRate)
-			vectorListener?.invoke(vector, output, errors)
+			val (output, error) = network.learn(vector, learnRate)
+			vectorListener?.invoke(vector, output, error)
 			yield()
-			errors
+			error
 		}
 		val highestError = errors.flatMap { it.asIterable() }.maxBy { abs(it) } ?: 0f
-		val sumSquaredError = errors.sumByDouble { it.sumByDouble { it.pow(2).toDouble() } }.toFloat() //TODO Fix
+		val sumSquaredError = errors.sumByDouble { it.sumByDouble { it.pow(2).toDouble() } }.toFloat() / (network.output * vectors.size)
 		epochListener?.invoke(LearningState(learnRate, highestError, sumSquaredError))
 	}
 }

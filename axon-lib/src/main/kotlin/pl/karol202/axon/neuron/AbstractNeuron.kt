@@ -12,12 +12,13 @@ abstract class AbstractNeuron protected constructor(
 	override val inputs = weights.size - 1
 
 	protected var input: FloatArray? = null
+	protected var output: Float? = null
 
 	override fun getNeuronData() = NeuronData(weights)
 
 	override fun randomizeWeights(range: FloatRange)
 	{
-		repeat(inputs) { weights[it] = range.randomNonZero() }
+		repeat(weights.size) { weights[it] = range.randomNonZero() }
 	}
 
 	override fun calculate(input: FloatArray): Float
@@ -26,6 +27,6 @@ abstract class AbstractNeuron protected constructor(
 			throw AxonException("Input array of size ${input.size} is not applicable to neuron with $inputs inputs.")
 		this.input = input
 		val sum = (input + 1f).mapIndexed { i, value -> value * weights[i] }.sum()
-		return activation.calculate(sum)
+		return activation.calculate(sum).also { output = it }
 	}
 }
