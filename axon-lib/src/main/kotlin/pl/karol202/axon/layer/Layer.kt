@@ -6,6 +6,7 @@ import pl.karol202.axon.neuron.Neuron
 interface Layer<N : Neuron>
 {
 	val size: Int
+	val inputs: Int
 
 	fun getLayerData(): LayerData
 

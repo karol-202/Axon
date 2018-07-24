@@ -9,6 +9,13 @@ abstract class AbstractNetwork<L : Layer<N>, N : Neuron, O>(
 		protected val outputType: Output<O>
 ) : Network<L, N, O>
 {
+	override val size: Int
+		get() = layers.size
+	override val inputs: Int
+		get() = layers.firstOrNull()?.inputs ?: 0
+	override val output: Int
+		get() = layers.lastOrNull()?.size ?: inputs //When there are no layers, inputs are outputs
+
 	override fun getNetworkData() = NetworkData.fromLayers(layers)
 
 	override fun randomize(range: FloatRange)

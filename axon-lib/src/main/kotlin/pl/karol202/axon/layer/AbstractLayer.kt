@@ -10,6 +10,8 @@ abstract class AbstractLayer<N : Neuron> protected constructor(
 {
 	override val size: Int
 		get() = neurons.size
+	override val inputs: Int
+		get() = neurons.map { it.inputs }.distinct().single()
 
 	override fun getLayerData() = LayerData.fromNeurons(neurons)
 

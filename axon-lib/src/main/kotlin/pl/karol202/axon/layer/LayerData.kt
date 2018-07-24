@@ -5,7 +5,7 @@ import pl.karol202.axon.neuron.NeuronData
 
 data class LayerData(
 		private val neurons: List<NeuronData>
-)
+) : Iterable<NeuronData>
 {
 	companion object
 	{
@@ -16,4 +16,6 @@ data class LayerData(
 		get() = neurons.size
 
 	operator fun get(neuron: Int) = neurons[neuron]
+
+	override fun iterator() = neurons.iterator()
 }

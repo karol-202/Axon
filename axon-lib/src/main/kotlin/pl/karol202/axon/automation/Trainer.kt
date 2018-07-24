@@ -1,6 +1,7 @@
 package pl.karol202.axon.automation
 
 import kotlinx.coroutines.experimental.yield
+import pl.karol202.axon.AxonException
 import pl.karol202.axon.network.SupervisedNetwork
 import pl.karol202.axon.network.VectorWithResponse
 import kotlin.math.abs
@@ -8,8 +9,8 @@ import kotlin.math.pow
 
 class Trainer<O>(
 		private val network: SupervisedNetwork<*, *, O>,
-		var learnRateSupplier: LearnRateSupplier,
-		var trainingStop: TrainingStop
+		var learnRateSupplier: LearnRateSupplier?, //Must be not null in order to use train() or trainEpoch() without passing learn rate
+		var trainingStop: TrainingStop? //Must be not null in order to use train()
 )
 {
 	data class LearningState(
@@ -23,6 +24,9 @@ class Trainer<O>(
 
 	suspend fun train(vectors: List<VectorWithResponse>)
 	{
+		val learnRateSupplier = learnRateSupplier ?: throw AxonException("learnRateSupplier cannot be null.")
+		val trainingStop = trainingStop ?: throw AxonException("trainingStop cannot be null.")
+
 		var learningState: LearningState? = null
 		while(!trainingStop.shouldStop(learningState))
 		{
@@ -34,7 +38,7 @@ class Trainer<O>(
 	}
 
 	suspend fun trainEpoch(vectors: List<VectorWithResponse>,
-	                       learnRate: Float = learnRateSupplier.getLearnRate(null),
+	                       learnRate: Float = learnRateSupplier?.getLearnRate(null) ?: throw AxonException("learnRateSupplier cannot be null."),
 	                       vectorListener: ((VectorWithResponse, O, FloatArray) -> Unit)? = this.vectorListener,
 	                       epochListener: ((LearningState) -> Unit)? = this.epochListener
 	)
