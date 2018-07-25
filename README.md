@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.karol-202:Axon:0.2'
+    implementation 'com.github.karol-202:Axon:0.2.1'
 }
 ```
 
@@ -24,7 +24,7 @@ Axon's network consists of layers which consist of neurons.
 You can define structure of network
 using code like that:
 ```
-val network = basicNetwork(inputs = 3, outputType = RawOutput()) {
+val network = basicNetwork(inputs = 3, outputType = RawOutput(), null) {
     basicLayer { 
         repeat(10) { basicNeuron(activation = SigmoidalActivation(1f)) }
     }
