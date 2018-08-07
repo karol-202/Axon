@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.karol-202:Axon:0.2.1'
+    implementation 'com.github.karol-202:Axon:0.2.2'
 }
 ```
 
@@ -66,29 +66,24 @@ runBlocking {
 ```
 
 To train network, you should create instance of Trainer.
-Constructor of Trainer besides network needs learn rate supplier and training stop object.
+Constructor of Trainer besides network needs learn rate supplier.
 
-The first one determines current learn rate used to train network. You can use one of predefined
+It determines current learn rate used to train network. You can use one of predefined
 suppliers (currently the only one that is available gives constant learn rate) or create your own
-by extending LearnRateSupplier interface.
-
-The second one, TrainingStop, is used in continuous mode to determine whether training can stop.
-You can use one of predefined (currently there are three of them available: never stop,
-stop when highest error is lower than given threshold and stop when sum squared error is lower than
-given threshold) or create your own by extending TrainingStop interface.
+by extending LearnRateSupplier interface.`
 
 Trainer has two ways of use:
 1. One epoch training (trainEpoch()) - trains network using all of supplied vectors
-2. Continuous training (train()) - trains network as long as TrainingStop' shouldStop() method
-returns false
+2. Continuous training (train()) - trains network as long as epoch listener returns true
 ```
 val vector1 = VectorWithResponse(floatArrayOf(0.4f, -1f, 0.1f), floatArrayOf(0.75f))
 val vector2 = VectorWithResponse(floatArrayOf(0f, 0.2f, 0.95f), floatArrayOf(-0.1f))
 val vectors = listOf(vector1, vector2)
 
-val trainer = Trainer(network, ConstantLearnRate(0.1f), TrainingStopNever())
+val trainer = Trainer(network, ConstantLearnRate(0.1f))
 trainer.epochListener = { state ->
     println("Sum squared error: ${state.lastSumSquaredError}")
+    true
 }
 
 val trainJob = async {

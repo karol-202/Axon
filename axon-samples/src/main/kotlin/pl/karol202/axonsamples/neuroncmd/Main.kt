@@ -6,7 +6,6 @@ import kotlinx.coroutines.experimental.runBlocking
 import pl.karol202.axon.automation.ConstantLearnRate
 import pl.karol202.axon.automation.Tester
 import pl.karol202.axon.automation.Trainer
-import pl.karol202.axon.automation.TrainingStopNever
 import pl.karol202.axon.layer.basicLayer
 import pl.karol202.axon.network.RawOutput
 import pl.karol202.axon.network.Vector
@@ -81,7 +80,7 @@ class Main
 
 	private fun autoTrainOnce()
 	{
-		val trainer = Trainer(network, null, null)
+		val trainer = Trainer(network, null)
 		trainer.vectorListener = { _, _, error ->
 			print("Błąd: ")
 			error.forEach { print("$it ") }
@@ -96,10 +95,11 @@ class Main
 
 	private fun autoTrainContinuous()
 	{
-		val trainer = Trainer(network, ConstantLearnRate(0.1f), TrainingStopNever())
+		val trainer = Trainer(network, ConstantLearnRate(0.1f))
 		trainer.epochListener = { state ->
 			println("Błąd średniokwadratowy: ${state.lastSumSquaredError}")
 			saveNetworkData()
+			true
 		}
 
 		val trainJob = async {
@@ -194,7 +194,7 @@ class Main
 		println("Podaj oczekiwane wyjścia ($outputs)")
 		val output = (0..outputs).map { scanner.nextFloat() }.toFloatArray()
 
-		val trainer = Trainer(network, null, null)
+		val trainer = Trainer(network, null)
 		runBlocking {
 			trainer.trainEpoch(listOf(VectorWithResponse(input, output)), 0.1f, { _, _, error ->
 				print("Błąd: ")
