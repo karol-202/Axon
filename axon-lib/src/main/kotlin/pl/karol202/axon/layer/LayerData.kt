@@ -1,21 +1,31 @@
 package pl.karol202.axon.layer
 
-import pl.karol202.axon.neuron.Neuron
 import pl.karol202.axon.neuron.NeuronData
+import pl.karol202.axon.specification.LayerSpecification
+import pl.karol202.axon.util.FloatRange
 
-data class LayerData(
-		val neurons: List<NeuronData>
-) : Iterable<NeuronData>
+interface LayerData
 {
 	companion object
 	{
-		fun fromNeurons(neurons: List<Neuron>) = LayerData(neurons.map { it.getNeuronData() })
+		fun random(layerSpecification: LayerSpecification<*, *>, inputs: Int, range: FloatRange): LayerData =
+				RandomLayerData(layerSpecification, inputs, range)
+
+		fun fromList(list: List<NeuronData>): LayerData = ListLayerData(list)
 	}
 
-	val size: Int
-		get() = neurons.size
+	fun getNeuronsData(): List<NeuronData>
+}
 
-	operator fun get(neuron: Int) = neurons[neuron]
+private class ListLayerData(private val list: List<NeuronData>) : LayerData
+{
+	override fun getNeuronsData() = list
+}
 
-	override fun iterator() = neurons.iterator()
+private class RandomLayerData(private val layerSpecification: LayerSpecification<*, *>,
+                              private val inputs: Int,
+                              private val range: FloatRange) : LayerData
+{
+	override fun getNeuronsData() =
+			List(layerSpecification.size) { NeuronData.random(inputs, range) }
 }

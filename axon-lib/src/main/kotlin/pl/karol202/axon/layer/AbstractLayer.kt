@@ -1,31 +1,26 @@
 package pl.karol202.axon.layer
 
-import pl.karol202.axon.AxonException
-import pl.karol202.axon.FloatRange
 import pl.karol202.axon.neuron.Neuron
 
-abstract class AbstractLayer<N : Neuron> protected constructor(
-		protected val neurons: List<N>
-) : Layer<N>
+abstract class AbstractLayer<N : Neuron>(protected val neurons: List<N>) : Layer<N>
 {
-	override val size: Int
-		get() = neurons.size
-	override val inputs: Int
-		get() = neurons.map { it.inputs }.distinct().single()
-
-	override fun getLayerData() = LayerData.fromNeurons(neurons)
-
-	override fun randomizeWeights(range: FloatRange)
+	override val size = neurons.size
+	override val inputs = neurons.map { it.inputs }.distinct().let { when(it.size)
 	{
-		neurons.forEach { it.randomizeWeights(range) }
-	}
+		0 -> 0
+		1 -> it[0]
+		else -> throw IllegalArgumentException("Inconsistent neurons")
+	} }
+	override val layerData = LayerData.fromList(neurons.map { it.neuronData })
 
 	override fun calculate(input: FloatArray) = neurons.map { it.calculate(input) }.toFloatArray()
 
-	override fun learn(errors: FloatArray, learnRate: Float)
-	{
-		if(errors.size != size)
-			throw AxonException("Errors array of size ${errors.size} is not applicable to layer with $size neurons.")
-		neurons.forEachIndexed { i, neuron -> neuron.learn(errors[i], learnRate) }
-	}
+	protected fun checkInputSize(input: FloatArray) =
+			if(input.size == inputs) Unit
+			else throw IllegalArgumentException("Input array of size ${input.size} is not applicable to layer with $inputs inputs.")
+
+	// Works for errors as well
+	protected fun checkOutputSize(output: FloatArray) =
+			if(output.size == size) Unit
+			else throw IllegalArgumentException("Output array of size ${output.size} is not applicable to layer with $size neurons.")
 }

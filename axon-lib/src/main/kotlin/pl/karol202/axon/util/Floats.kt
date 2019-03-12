@@ -1,4 +1,4 @@
-package pl.karol202.axon
+package pl.karol202.axon.util
 
 import java.util.*
 

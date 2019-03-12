@@ -1,19 +1,25 @@
 package pl.karol202.axon.layer
 
-import pl.karol202.axon.FloatRange
+import pl.karol202.axon.neuron.BackpropagationNeuron
 import pl.karol202.axon.neuron.Neuron
+import pl.karol202.axon.neuron.SupervisedNeuron
 
 interface Layer<N : Neuron>
 {
 	val size: Int
 	val inputs: Int
-
-	fun getLayerData(): LayerData
-
-	fun randomizeWeights(range: FloatRange)
+	val layerData: LayerData
 
 	fun calculate(input: FloatArray): FloatArray
+}
 
-	//To call only after calling calculate()
-	fun learn(errors: FloatArray, learnRate: Float)
+interface BackpropagationLayer<N : BackpropagationNeuron> : Layer<N>
+{
+	//Calculates error of previous(closer to input) layer
+	fun backpropagateError(errors: FloatArray, previousLayerSize: Int): FloatArray
+}
+
+interface SupervisedLayer<N : SupervisedNeuron> : BackpropagationLayer<N>
+{
+	fun learn(input: FloatArray, output: FloatArray, error: FloatArray, learnRate: Float)
 }

@@ -1,7 +1,5 @@
 package pl.karol202.axonsamples.neuroncmd;
 
-import pl.karol202.axon.network.VectorWithResponse;
-
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -24,6 +22,7 @@ public class VectorsSave
 
 	static ArrayList<VectorWithResponse> loadVector(File file) throws XMLStreamException, FileNotFoundException
 	{
+			System.out.println(file.getAbsolutePath());
 		if(!file.exists()) return null;
 		FileInputStream fis = new FileInputStream(file);
 		XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(fis);

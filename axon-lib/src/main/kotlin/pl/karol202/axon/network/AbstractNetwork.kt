@@ -1,31 +1,38 @@
 package pl.karol202.axon.network
 
-import pl.karol202.axon.FloatRange
 import pl.karol202.axon.layer.Layer
 import pl.karol202.axon.neuron.Neuron
 
-abstract class AbstractNetwork<L : Layer<N>, N : Neuron, O>(
-		protected val layers: List<L>,
-		protected val outputType: Output<O>
-) : Network<L, N, O>
+abstract class AbstractNetwork<L : Layer<N>, N : Neuron>(override val inputs: Int,
+                                                         protected val layers: List<L>) : Network<L, N>
 {
-	override val size: Int
-		get() = layers.size
-	override val inputs: Int
-		get() = layers.firstOrNull()?.inputs ?: 0
-	override val output: Int
-		get() = layers.lastOrNull()?.size ?: inputs //When there are no layers, inputs are outputs
+	override val layersAmount = layers.size
+	override val outputs = layers.lastOrNull()?.size ?: 0
+	override val networkData = NetworkData.fromList(layers.map { it.layerData })
 
-	override fun getNetworkData() = NetworkData.fromLayers(layers)
-
-	override fun randomize(range: FloatRange)
+	init
 	{
-		layers.forEach { it.randomizeWeights(range) }
+		checkConsistency()
 	}
 
-	override fun calculate(vector: Vector) =
-			outputType.transform(calculateRaw(vector))
+	private fun checkConsistency()
+	{
+		var currentInputs = inputs
+		layers.forEach { layer ->
+			if(layer.inputs != currentInputs) throw IllegalArgumentException("Inconsistent layers.")
+			currentInputs = layer.size
+		}
+	}
 
-	protected fun calculateRaw(vector: Vector) =
-			layers.fold(vector.inputs) { layerInput, layer -> layer.calculate(layerInput) }
+	override fun calculate(input: FloatArray) =
+			layers.fold(input) { layerInput, layer -> layer.calculate(layerInput) }
+
+	protected fun checkInputSize(input: FloatArray) =
+			if(input.size == inputs) Unit
+			else throw IllegalArgumentException("Input array of size ${input.size} is not applicable to network with $inputs inputs.")
+
+	// Works for errors as well
+	protected fun checkOutputSize(output: FloatArray) =
+			if(output.size == outputs) Unit
+			else throw IllegalArgumentException("Output array of size ${output.size} is not applicable to network with $output outputs.")
 }

@@ -1,21 +1,22 @@
 package pl.karol202.axon.specification
 
-import pl.karol202.axon.AxonException
 import pl.karol202.axon.layer.Layer
 import pl.karol202.axon.network.Network
 import pl.karol202.axon.network.NetworkData
-import pl.karol202.axon.network.Output
 import pl.karol202.axon.neuron.Neuron
+import pl.karol202.axon.util.FloatRange
 
-fun <NS : NetworkSpecification<*, *, *, *>> createNetwork(network: NS, init: NS.() -> Unit) = network.apply(init)
+fun <NS : NetworkSpecification<*, *, *>> networkBuilder(network: NS, init: NS.() -> Unit) = network.apply(init)
 
-abstract class NetworkSpecification<T : Network<L, N, O>, L : Layer<N>, N : Neuron, O>(
-		val inputs: Int,
-		val outputType: Output<O>,
-		val networkData: NetworkData? = null
-) : SpecificationElement
+fun <T : Network<L, N>, L : Layer<N>, N : Neuron> NetworkSpecification<T, L, N>.createNetworkRandomly(range: FloatRange) =
+		createNetwork(NetworkData.random(this, range))
+
+abstract class NetworkSpecification<T : Network<L, N>, L : Layer<N>, N : Neuron>(val inputs: Int) :
+		SpecificationElement
 {
 	private val layers = mutableListOf<LayerSpecification<L, N>>()
+
+	val size get() = layers.size
 
 	fun <LS : LayerSpecification<L, N>> addLayer(layer: LS, init: LS.() -> Unit)
 	{
@@ -23,16 +24,14 @@ abstract class NetworkSpecification<T : Network<L, N, O>, L : Layer<N>, N : Neur
 		layers.add(layer)
 	}
 
-	fun create() = createNetwork(createLayers())
+	fun getLayerSpecification(index: Int) = layers[index]
 
-	abstract fun createNetwork(layers: List<L>): T
+	abstract fun createNetwork(networkData: NetworkData): T
 
-	private fun createLayers(): List<L>
+	protected fun NetworkData.createLayers(): List<L>
 	{
-		networkData?.let { if(it.size != layers.size) throw AxonException("Invalid network data.") }
-		var layerInputs = inputs
-		return layers.mapIndexed { i, layerSpecs ->
-			layerSpecs.create(layerInputs, networkData?.get(i)).also { layerInputs = it.size }
-		}
+		val layersData = getLayersData()
+		if(layersData.size != layers.size) throw IllegalArgumentException("Invalid network data.")
+		return layers.mapIndexed { i, layerSpecs -> layerSpecs.createLayer(layersData[i]) }
 	}
 }

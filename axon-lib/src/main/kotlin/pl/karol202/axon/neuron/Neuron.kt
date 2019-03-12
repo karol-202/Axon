@@ -1,17 +1,19 @@
 package pl.karol202.axon.neuron
 
-import pl.karol202.axon.FloatRange
-
 interface Neuron
 {
 	val inputs: Int
-
-	fun getNeuronData(): NeuronData
-
-	fun randomizeWeights(range: FloatRange)
+	val neuronData: NeuronData
 
 	fun calculate(input: FloatArray): Float
+}
 
-	//To call only after calling calculate()
-	fun learn(error: Float, learnRate: Float)
+interface BackpropagationNeuron : Neuron
+{
+	fun backpropagateErrorForInput(error: Float, input: Int): Float
+}
+
+interface SupervisedNeuron : BackpropagationNeuron
+{
+	fun learn(input: FloatArray, output: Float, error: Float, learnRate: Float)
 }

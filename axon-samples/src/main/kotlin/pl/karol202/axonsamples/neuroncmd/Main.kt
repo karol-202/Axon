@@ -1,37 +1,35 @@
 package pl.karol202.axonsamples.neuroncmd
 
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.cancelAndJoin
-import kotlinx.coroutines.experimental.runBlocking
-import pl.karol202.axon.automation.ConstantLearnRate
-import pl.karol202.axon.automation.Tester
-import pl.karol202.axon.automation.Trainer
-import pl.karol202.axon.layer.basicLayer
-import pl.karol202.axon.network.RawOutput
-import pl.karol202.axon.network.Vector
-import pl.karol202.axon.network.VectorWithResponse
-import pl.karol202.axon.network.basicNetwork
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.runBlocking
+import pl.karol202.axon.layer.standardSupervisedNeuron
+import pl.karol202.axon.network.standardSupervisedLayer
+import pl.karol202.axon.network.standardSupervisedNetwork
 import pl.karol202.axon.neuron.SigmoidalActivation
-import pl.karol202.axon.neuron.basicNeuron
+import pl.karol202.axon.specification.createNetworkRandomly
+import pl.karol202.axonsamples.neuroncmd.automation.Tester
+import pl.karol202.axonsamples.neuroncmd.automation.Trainer
 import java.io.File
 import java.util.*
 
-fun main(args: Array<String>) = Main().mainMenu()
+fun main() = Main().mainMenu()
 
 class Main
 {
 	private val vectorsFile = File("res/neuroncmd/vectors.dat")
 	private val dataFile = File("res/neuroncmd/data.dat")
 
-	private val vectors: ArrayList<VectorWithResponse> = VectorsSave.loadVector(vectorsFile) ?: throw Exception("Cannot load vectors")
-	private val network = basicNetwork(22, RawOutput(), DataLoader.loadNetworkData(dataFile)) {
-		basicLayer {
-			repeat(20) { basicNeuron(SigmoidalActivation(1f)) }
+	private val vectors = VectorsSave.loadVector(vectorsFile) ?: throw Exception("Cannot load vectors")
+	private val network = standardSupervisedNetwork(22) {
+		standardSupervisedLayer {
+			repeat(20) { standardSupervisedNeuron(SigmoidalActivation(1f)) }
 		}
-		basicLayer {
-			repeat(3) { basicNeuron(SigmoidalActivation(1f)) }
+		standardSupervisedLayer {
+			repeat(3) { standardSupervisedNeuron(SigmoidalActivation(1f)) }
 		}
-	}.create()
+	}.createNetworkRandomly(-0.1f..0.1f)
 
 	private val scanner = Scanner(System.`in`)
 
@@ -43,15 +41,13 @@ class Main
 			println("1. Tryb automatyczny")
 			println("2. Tryb ręczny")
 			println("3. Wypisz wagi")
-			println("4. Resetuj sieć")
-			println("5. Wyjdź")
+			println("4. Wyjdź")
 			when(scanner.nextInt())
 			{
 				1 -> modeAuto()
 				2 -> modeManual()
 				3 -> dumpWeights()
-				4 -> resetWeights()
-				5 -> break@loop
+				4 -> break@loop
 				else -> println("Niewłaściwy wybór")
 			}
 		}
@@ -80,14 +76,14 @@ class Main
 
 	private fun autoTrainOnce()
 	{
-		val trainer = Trainer(network, null)
-		trainer.vectorListener = { _, _, error ->
+		val vectorListener = { _: VectorWithResponse, _: FloatArray, error: FloatArray ->
 			print("Błąd: ")
 			error.forEach { print("$it ") }
 			println()
 		}
+		val trainer = Trainer(network, { 0.1f }, vectorListener, { true })
 		runBlocking {
-			trainer.trainEpoch(vectors, 0.1f)
+			trainer.trainEpoch(vectors)
 		}
 		println("Uczenie zakończone")
 		saveNetworkData()
@@ -95,14 +91,15 @@ class Main
 
 	private fun autoTrainContinuous()
 	{
-		val trainer = Trainer(network, ConstantLearnRate(0.1f))
-		trainer.epochListener = { state ->
+		val epochListener = { state: Trainer.LearningState ->
 			println("Błąd średniokwadratowy: ${state.lastSumSquaredError}")
 			saveNetworkData()
-			true
+		true
 		}
 
-		val trainJob = async {
+		val trainer = Trainer(network, { 0.1f }, { _, _, _ -> Unit}, epochListener)
+
+		val trainJob = GlobalScope.async {// TODO Remove GlobalScope
 			trainer.train(vectors)
 		}
 		runBlocking {
@@ -158,11 +155,11 @@ class Main
 			println("Wektor:")
 
 			print("  Wejścia: ")
-			vector.inputs.forEach { print("$it ") }
+			vector.input.forEach { print("$it ") }
 			println()
 
 			print("  Oczekiwane wyjścia: ")
-			vector.outputs.forEach { print("$it ") }
+			vector.output.forEach { print("$it ") }
 			println()
 		}
 	}
@@ -187,28 +184,28 @@ class Main
 	private fun manualTrain()
 	{
 		val inputs = network.inputs
-		println("Podaj wejścia (${inputs}):")
+		println("Podaj wejścia ($inputs):")
 		val input = (0..inputs).map { scanner.nextFloat() }.toFloatArray()
 
-		val outputs = network.output
+		val outputs = network.outputs
 		println("Podaj oczekiwane wyjścia ($outputs)")
 		val output = (0..outputs).map { scanner.nextFloat() }.toFloatArray()
 
-		val trainer = Trainer(network, null)
+		val trainer = Trainer(network, { 0.1f }, { _, _, _ -> Unit }, { true })
 		runBlocking {
 			trainer.trainEpoch(listOf(VectorWithResponse(input, output)), 0.1f, { _, _, error ->
 				print("Błąd: ")
 				error.forEach { print("$it ") }
 				println()
 				saveNetworkData()
-			}, null)
+			})
 		}
 	}
 
 	private fun manualTest()
 	{
 		val inputs = network.inputs
-		println("Podaj wejścia (${inputs}):")
+		println("Podaj wejścia ($inputs):")
 		val input = (0 until inputs).map { scanner.nextFloat() }.toFloatArray()
 
 		val tester = Tester(network)
@@ -224,24 +221,27 @@ class Main
 	private fun dumpWeights()
 	{
 		println("Dane sieci:")
-		network.getNetworkData().forEachIndexed { i, layer ->
+		network.networkData.getLayersData().forEachIndexed { i, layer ->
 			println("  Warstwa $i:")
-			layer.forEachIndexed { j, neuronData ->
+			layer.getNeuronsData().forEachIndexed { j, neuronData ->
 				print("    Neuron $j: ")
-				neuronData.weights.forEach { print("$it ") }
+				neuronData.getWeights().forEach { print("$it ") }
 				println()
 			}
 		}
 	}
 
-	private fun resetWeights()
-	{
-		network.randomize(-0.1f..0.1f)
-		saveNetworkData()
-	}
-
 	private fun saveNetworkData()
 	{
-		DataLoader.saveNetworkData(dataFile, network.getNetworkData())
+		DataLoader.saveNetworkData(dataFile, network.networkData)
 	}
 }
+/*
+fun waitForInput(scanner: Scanner, listener: () -> Unit)
+	{
+		thread {
+			scanner.nextLine()
+			listener()
+		}
+	}
+ */
