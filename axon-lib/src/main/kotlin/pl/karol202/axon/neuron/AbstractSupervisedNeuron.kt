@@ -2,7 +2,7 @@ package pl.karol202.axon.neuron
 
 abstract class AbstractSupervisedNeuron(weights: FloatArray,
                                         activation: Activation) : AbstractNeuron(weights, activation),
-                                                           SupervisedNeuron
+                                                                  SupervisedNeuron
 {
 	override fun learn(input: FloatArray, output: Float, error: Float, learnRate: Float)
 	{

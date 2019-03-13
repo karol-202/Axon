@@ -26,11 +26,9 @@ open class StandardSupervisedNetwork(inputs: Int,
 		checkOutputSize(error)
 
 		var currentError = error
-		for(i in (layers.size - 1) downTo 0)
-		{
-			val layer = layers[i]
+		layers.reversed().forEachIndexed { layerIndex, layer ->
 			val tempError = currentError
-			if(i > 0) currentError = layer.backpropagateError(tempError, layers[i - 1].size)
+			if(layerIndex > 0) currentError = layer.backpropagateError(tempError, layers[layerIndex - 1].size)
 			layer.learn(error = tempError, learnRate = learnRate)
 		}
 	}

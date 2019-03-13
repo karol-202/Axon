@@ -24,7 +24,8 @@ open class StandardSupervisedNeuron(weights: FloatArray,
 
 	open fun learn(error: Float, learnRate: Float)
 	{
-		fun <T> error(): T = throw IllegalStateException("Cannot learn without calling calculate() first")
+		fun error(): Nothing = throw IllegalStateException("Cannot learn without calling calculate() first")
+
 		val input = this.input ?: error()
 		val output = this.output ?: error()
 		learn(input, output, error, learnRate)
