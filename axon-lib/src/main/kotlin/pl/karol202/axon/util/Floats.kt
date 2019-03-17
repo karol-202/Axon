@@ -2,7 +2,7 @@ package pl.karol202.axon.util
 
 import java.util.*
 
-typealias FloatRange = ClosedFloatingPointRange<Float>
+internal typealias FloatRange = ClosedFloatingPointRange<Float>
 
 fun FloatRange.randomNonZero(): Float = (start + Random().nextFloat() * (endInclusive - start)).let { value ->
 	if(value != 0f) value else randomNonZero()
