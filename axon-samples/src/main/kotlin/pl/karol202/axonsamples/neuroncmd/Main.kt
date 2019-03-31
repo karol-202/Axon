@@ -24,10 +24,10 @@ class Main
 	private val vectors = VectorsSave.loadVector(vectorsFile) ?: throw Exception("Cannot load vectors")
 	private val network = standardSupervisedNetwork(22) {
 		standardSupervisedLayer {
-			repeat(20) { standardSupervisedNeuron(SigmoidalActivation(1f)) }
+			repeat(20) { standardSupervisedNeuron(SigmoidalActivation(1f), 1f) }
 		}
 		standardSupervisedLayer {
-			repeat(3) { standardSupervisedNeuron(SigmoidalActivation(1f)) }
+			repeat(3) { standardSupervisedNeuron(SigmoidalActivation(1f), 1f) }
 		}
 	}.createNetworkRandomly(-0.1f..0.1f)
 

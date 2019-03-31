@@ -4,8 +4,8 @@ import pl.karol202.axon.neuron.Activation
 import pl.karol202.axon.neuron.StandardSupervisedNeuron
 import pl.karol202.axon.specification.LayerSpecification
 
-fun StandardSupervisedLayer.Specification.standardSupervisedNeuron(activation: Activation) =
-		addNeuron(StandardSupervisedNeuron.Specification(activation))
+fun StandardSupervisedLayer.Specification.standardSupervisedNeuron(activation: Activation, bias: Float) =
+		addNeuron(StandardSupervisedNeuron.Specification(activation, bias))
 
 open class StandardSupervisedLayer(neurons: List<StandardSupervisedNeuron>) :
 		AbstractSupervisedLayer<StandardSupervisedNeuron>(neurons)

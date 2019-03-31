@@ -2,13 +2,15 @@ package pl.karol202.axon.neuron
 
 import pl.karol202.axon.specification.NeuronSpecification
 
-open class StandardSupervisedNeuron(weights: FloatArray,
-                                    activation: Activation) : AbstractSupervisedNeuron(weights, activation)
+open class StandardSupervisedNeuron(activation: Activation,
+                                    bias: Float,
+                                    weights: FloatArray) : AbstractSupervisedNeuron(activation, bias, weights)
 {
-	class Specification(private val activation: Activation) : NeuronSpecification<StandardSupervisedNeuron>()
+	class Specification(private val activation: Activation,
+	                    private val bias: Float) : NeuronSpecification<StandardSupervisedNeuron>()
 	{
 		override fun createNeuron(neuronData: NeuronData) =
-				StandardSupervisedNeuron(neuronData.getWeights().toFloatArray(), activation)
+				StandardSupervisedNeuron(activation, bias, neuronData.getWeights().toFloatArray())
 	}
 
 	private var input: FloatArray? = null

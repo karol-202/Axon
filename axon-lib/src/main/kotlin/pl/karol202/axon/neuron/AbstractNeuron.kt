@@ -1,7 +1,8 @@
 package pl.karol202.axon.neuron
 
-abstract class AbstractNeuron(protected val weights: FloatArray,
-                              protected val activation: Activation) : Neuron
+abstract class AbstractNeuron(protected val activation: Activation,
+                              protected val bias: Float,
+                              protected val weights: FloatArray) : Neuron
 {
 	override val inputs = weights.size - 1
 	override val neuronData = NeuronData.fromArray(weights)
@@ -9,7 +10,7 @@ abstract class AbstractNeuron(protected val weights: FloatArray,
 	override fun calculate(input: FloatArray): Float
 	{
 		checkInputSize(input)
-		val sum = (input + 1f).mapIndexed { i, value -> value * weights[i] }.sum()
+		val sum = (input + bias).mapIndexed { i, value -> value * weights[i] }.sum()
 		return activation.calculate(sum)
 	}
 
