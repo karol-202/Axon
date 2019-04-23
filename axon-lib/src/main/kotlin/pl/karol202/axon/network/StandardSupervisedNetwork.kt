@@ -21,7 +21,7 @@ open class StandardSupervisedNetwork(inputs: Int,
 		override fun createNetwork(networkData: NetworkData) = StandardSupervisedNetwork(inputs, networkData.createLayers())
 	}
 
-	fun learn(error: FloatArray, learnRate: Float)
+	suspend fun learn(error: FloatArray, learnRate: Float)
 	{
 		checkOutputSize(error)
 

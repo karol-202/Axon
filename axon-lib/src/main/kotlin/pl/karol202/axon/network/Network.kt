@@ -10,5 +10,5 @@ interface Network<L : Layer<N>, N : Neuron>
 	val outputs: Int
 	val networkData: NetworkData
 
-	fun calculate(input: FloatArray): FloatArray
+	suspend fun calculate(input: FloatArray): FloatArray
 }

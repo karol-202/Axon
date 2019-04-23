@@ -24,7 +24,7 @@ abstract class AbstractNetwork<L : Layer<N>, N : Neuron>(override val inputs: In
 		}
 	}
 
-	override fun calculate(input: FloatArray) =
+	override suspend fun calculate(input: FloatArray) =
 			layers.fold(input) { layerInput, layer -> layer.calculate(layerInput) }
 
 	protected fun checkInputSize(input: FloatArray) =

@@ -5,7 +5,7 @@ abstract class AbstractSupervisedNeuron(activation: Activation,
                                         weights: FloatArray) : AbstractNeuron(activation, bias, weights),
                                                                SupervisedNeuron
 {
-	override fun learn(input: FloatArray, output: Float, error: Float, learnRate: Float)
+	override suspend fun learn(input: FloatArray, output: Float, error: Float, learnRate: Float)
 	{
 		checkInputSize(input)
 		val transformedError = error * activation.calculateDerivative(output)
@@ -15,5 +15,5 @@ abstract class AbstractSupervisedNeuron(activation: Activation,
 		}
 	}
 
-	override fun backpropagateErrorForInput(error: Float, input: Int) = error * weights[input]
+	override suspend fun backpropagateErrorForInput(error: Float, input: Int) = error * weights[input]
 }

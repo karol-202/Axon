@@ -1,5 +1,7 @@
 package pl.karol202.axon.network
 
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import pl.karol202.axon.layer.ReinforcementLayer
 import pl.karol202.axon.neuron.ReinforcementNeuron
 import pl.karol202.axon.specification.NetworkSpecification
@@ -21,7 +23,7 @@ open class ReinforcementNetwork(inputs: Int,
 		override fun createNetwork(networkData: NetworkData) = ReinforcementNetwork(inputs, networkData.createLayers())
 	}
 
-	fun calculateAndGetIntermediateOutputs(input: FloatArray): List<FloatArray>
+	suspend fun calculateAndGetIntermediateOutputs(input: FloatArray): List<FloatArray>
 	{
 		var currentInput = input
 		return layers.map { layer ->
@@ -31,7 +33,7 @@ open class ReinforcementNetwork(inputs: Int,
 		}
 	}
 
-	fun backpropagateErrorAndGetIntermediateErrors(error: FloatArray): List<FloatArray>
+	suspend fun backpropagateErrorAndGetIntermediateErrors(error: FloatArray): List<FloatArray>
 	{
 		val intermediateErrors = mutableListOf(error)
 		var currentError = error
@@ -41,20 +43,22 @@ open class ReinforcementNetwork(inputs: Int,
 			val layer = layers[layerIndex]
 			val previousLayer = layers[layerIndex - 1]
 			currentError = layer.backpropagateError(currentError, previousLayer.size)
-			intermediateErrors.add(currentError)
+			intermediateErrors.add(0, currentError) // Insert at beginning
 		}
-		return intermediateErrors.apply { reverse() }
+		return intermediateErrors
 	}
 
-	fun learn(input: FloatArray, intermediateOutputs: List<FloatArray>, intermediateErrors: List<FloatArray>, learnRate: Float)
-	{
+	suspend fun learn(input: FloatArray, intermediateOutputs: List<FloatArray>,
+	                  intermediateErrors: List<FloatArray>, learnRate: Float) = coroutineScope {
 		checkInputSize(input)
 
-		var currentInput = input
-		layers.forEachIndexed { layerIndex, layer ->
-			layer.learn(input = currentInput, output = intermediateOutputs[layerIndex],
-			            error = intermediateErrors[layerIndex], learnRate = learnRate)
-			currentInput = intermediateOutputs[layerIndex]
-		}
+		fun getInputOfLayer(layer: Int) = if(layer == 0) input else intermediateOutputs[layer]
+
+		layers.mapIndexed { layerIndex, layer ->
+			launch {
+				layer.learn(input = getInputOfLayer(layerIndex), output = intermediateOutputs[layerIndex],
+				            error = intermediateErrors[layerIndex], learnRate = learnRate)
+			}
+		}.forEach { it.join() }
 	}
 }

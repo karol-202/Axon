@@ -7,7 +7,7 @@ abstract class AbstractNeuron(protected val activation: Activation,
 	override val inputs = weights.size - 1
 	override val neuronData = NeuronData.fromArray(weights)
 
-	override fun calculate(input: FloatArray): Float
+	override suspend fun calculate(input: FloatArray): Float
 	{
 		checkInputSize(input)
 		val sum = (input + bias).mapIndexed { i, value -> value * weights[i] }.sum()

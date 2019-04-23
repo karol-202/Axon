@@ -1,5 +1,7 @@
 package pl.karol202.axon.layer
 
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import pl.karol202.axon.neuron.Activation
 import pl.karol202.axon.neuron.StandardSupervisedNeuron
 import pl.karol202.axon.specification.LayerSpecification
@@ -15,9 +17,10 @@ open class StandardSupervisedLayer(neurons: List<StandardSupervisedNeuron>) :
 		override fun createLayer(layerData: LayerData) = StandardSupervisedLayer(layerData.createNeurons())
 	}
 
-	open fun learn(error: FloatArray, learnRate: Float)
-	{
+	open suspend fun learn(error: FloatArray, learnRate: Float) = coroutineScope {
 		checkOutputSize(error)
-		neurons.forEachIndexed { i, neuron -> neuron.learn(error = error[i], learnRate = learnRate) }
+		neurons.mapIndexed { i, neuron ->
+			launch { neuron.learn(error = error[i], learnRate = learnRate) }
+		}.forEach { it.join() }
 	}
 }

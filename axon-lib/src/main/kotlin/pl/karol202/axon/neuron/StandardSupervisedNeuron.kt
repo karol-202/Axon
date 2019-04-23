@@ -16,7 +16,7 @@ open class StandardSupervisedNeuron(activation: Activation,
 	private var input: FloatArray? = null
 	private var output: Float? = null
 
-	override fun calculate(input: FloatArray): Float
+	override suspend fun calculate(input: FloatArray): Float
 	{
 		val output = super.calculate(input)
 		this.input = input
@@ -24,7 +24,7 @@ open class StandardSupervisedNeuron(activation: Activation,
 		return output
 	}
 
-	open fun learn(error: Float, learnRate: Float)
+	open suspend fun learn(error: Float, learnRate: Float)
 	{
 		fun error(): Nothing = throw IllegalStateException("Cannot learn without calling calculate() first")
 

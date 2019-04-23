@@ -1,5 +1,7 @@
 package pl.karol202.axon.layer
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import pl.karol202.axon.neuron.Neuron
 
 abstract class AbstractLayer<N : Neuron>(protected val neurons: List<N>) : Layer<N>
@@ -13,7 +15,9 @@ abstract class AbstractLayer<N : Neuron>(protected val neurons: List<N>) : Layer
 	} }
 	override val layerData = LayerData.fromList(neurons.map { it.neuronData })
 
-	override fun calculate(input: FloatArray) = neurons.map { it.calculate(input) }.toFloatArray()
+	override suspend fun calculate(input: FloatArray) = coroutineScope {
+		neurons.map { async { it.calculate(input) } }.map { it.await() }.toFloatArray()
+	}
 
 	protected fun checkInputSize(input: FloatArray) =
 			if(input.size == inputs) Unit

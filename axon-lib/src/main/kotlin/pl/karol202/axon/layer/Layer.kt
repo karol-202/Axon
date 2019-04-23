@@ -10,16 +10,16 @@ interface Layer<N : Neuron>
 	val inputs: Int
 	val layerData: LayerData
 
-	fun calculate(input: FloatArray): FloatArray
+	suspend fun calculate(input: FloatArray): FloatArray
 }
 
 interface BackpropagationLayer<N : BackpropagationNeuron> : Layer<N>
 {
 	//Calculates error of previous(closer to input) layer
-	fun backpropagateError(errors: FloatArray, previousLayerSize: Int): FloatArray
+	suspend fun backpropagateError(errors: FloatArray, previousLayerSize: Int): FloatArray
 }
 
 interface SupervisedLayer<N : SupervisedNeuron> : BackpropagationLayer<N>
 {
-	fun learn(input: FloatArray, output: FloatArray, error: FloatArray, learnRate: Float)
+	suspend fun learn(input: FloatArray, output: FloatArray, error: FloatArray, learnRate: Float)
 }

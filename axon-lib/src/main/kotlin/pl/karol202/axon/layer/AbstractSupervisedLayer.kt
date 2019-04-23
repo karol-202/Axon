@@ -1,11 +1,13 @@
 package pl.karol202.axon.layer
 
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import pl.karol202.axon.neuron.AbstractSupervisedNeuron
 
 abstract class AbstractSupervisedLayer<N : AbstractSupervisedNeuron>(neurons: List<N>) : AbstractLayer<N>(neurons),
                                                                                          SupervisedLayer<N>
 {
-	override fun backpropagateError(errors: FloatArray, previousLayerSize: Int): FloatArray
+	override suspend fun backpropagateError(errors: FloatArray, previousLayerSize: Int): FloatArray
 	{
 		checkOutputSize(errors)
 		return FloatArray(previousLayerSize) { i ->
@@ -15,11 +17,12 @@ abstract class AbstractSupervisedLayer<N : AbstractSupervisedNeuron>(neurons: Li
 		}
 	}
 
-	override fun learn(input: FloatArray, output: FloatArray, error: FloatArray, learnRate: Float)
-	{
+	override suspend fun learn(input: FloatArray, output: FloatArray, error: FloatArray, learnRate: Float) = coroutineScope {
 		checkInputSize(input)
 		checkOutputSize(output)
 		checkOutputSize(error)
-		neurons.forEachIndexed { i, neuron -> neuron.learn(input = input, output = output[i], error = error[i], learnRate = learnRate) }
+		neurons.mapIndexed { i, neuron ->
+			launch { neuron.learn(input = input, output = output[i], error = error[i], learnRate = learnRate) }
+		}.forEach { it.join() }
 	}
 }
