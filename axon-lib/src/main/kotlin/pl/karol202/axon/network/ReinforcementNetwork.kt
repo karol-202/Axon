@@ -52,7 +52,7 @@ open class ReinforcementNetwork(inputs: Int,
 	                  intermediateErrors: List<FloatArray>, learnRate: Float) = coroutineScope {
 		checkInputSize(input)
 
-		fun getInputOfLayer(layer: Int) = if(layer == 0) input else intermediateOutputs[layer]
+		fun getInputOfLayer(layer: Int) = if(layer == 0) input else intermediateOutputs[layer - 1]
 
 		layers.mapIndexed { layerIndex, layer ->
 			launch {
